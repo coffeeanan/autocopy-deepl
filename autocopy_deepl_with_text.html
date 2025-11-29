@@ -35,13 +35,31 @@ textarea {
     width: 100%; 
     height: 300px; 
     padding: 15px; 
-    font-size: 16px; 
+    font-size: 22px; 
+    line-height: 1.7;
     box-sizing: border-box;
     border: 2px solid #e0e0e0;
     border-radius: 10px;
     font-family: inherit;
     resize: vertical;
     transition: border-color 0.3s;
+}
+@media (max-width: 768px) {
+    textarea {
+        font-size: 24px;
+        line-height: 1.8;
+        padding: 20px;
+    }
+    h1 {
+        font-size: 28px;
+    }
+    h2 {
+        font-size: 24px;
+    }
+    button {
+        font-size: 22px;
+        padding: 20px 45px;
+    }
 }
 textarea:focus {
     outline: none;
@@ -158,7 +176,7 @@ Herzliche Grüße
 Ihr Elternbeirat</textarea>
     </div>
 
-    <div class="text-section">
+    <div class="text-section" id="translation-section" style="display: none;">
         <h2>English Translation</h2>
         <textarea id="translation" placeholder="Click 'Translate' button to see the translation here..." readonly></textarea>
     </div>
@@ -215,6 +233,9 @@ async function translateHere() {
         status.textContent = '✓ Translation complete!';
         status.style.color = 'green';
         
+        // Show the translation section
+        document.getElementById('translation-section').style.display = 'block';
+        
         // Hide the German text section with smooth animation
         germanSection.style.transition = 'opacity 0.5s, max-height 0.5s';
         germanSection.style.opacity = '0';
@@ -245,6 +266,9 @@ function resetPage() {
     germanSection.style.opacity = '1';
     germanSection.style.maxHeight = '1000px';
     germanSection.style.marginBottom = '30px';
+    
+    // Hide translation section
+    document.getElementById('translation-section').style.display = 'none';
     
     // Clear translation
     translationBox.value = '';
