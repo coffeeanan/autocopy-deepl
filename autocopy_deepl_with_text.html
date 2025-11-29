@@ -5,26 +5,108 @@
 <meta charset="UTF-8">
 <title>German → DeepL Translator</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-textarea { width: 100%; height: 400px; padding: 10px; font-size: 16px; }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+    margin: 0;
+    padding: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+.container { 
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 32px;
+    text-align: center;
+}
+h2 {
+    color: #555;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+textarea { 
+    width: 100%; 
+    height: 300px; 
+    padding: 15px; 
+    font-size: 16px; 
+    box-sizing: border-box;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
 button {
-    padding: 15px 25px;
+    padding: 15px 35px;
     font-size: 18px;
-    background-color: #007aff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
-button:hover { background-color: #005fcc; }
+button:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+button:active {
+    transform: translateY(0);
+}
+button:disabled { 
+    background: #ccc; 
+    cursor: not-allowed;
+    box-shadow: none;
+}
+.section { 
+    margin-bottom: 30px;
+    text-align: center;
+}
+.text-section {
+    margin-bottom: 30px;
+    transition: opacity 0.5s, max-height 0.5s, margin-bottom 0.5s;
+}
+#status {
+    margin-top: 15px;
+    font-weight: 600;
+    min-height: 24px;
+}
+#new-translation-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+}
+#new-translation-btn:hover {
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+}
 </style>
 </head>
 <body>
 
-<h2>German Text</h2>
-<p>The text below can be translated using DeepL.</p>
+<div class="container">
+    <h1>German → English Translator</h1>
 
-<textarea id="text">Liebe Eltern, liebe Erziehungsberechtigte,
+    <div class="section">
+        <button id="translate-btn" onclick="translateHere()">Translate</button>
+        <button id="new-translation-btn" onclick="resetPage()" style="display: none;">New Translation</button>
+        <p id="status"></p>
+    </div>
+
+    <div class="text-section" id="german-section">
+        <h2>German Text</h2>
+        <textarea id="text">Liebe Eltern, liebe Erziehungsberechtigte,
 
 die Adventszeit lädt uns jedes Jahr dazu ein, innezuhalten und uns auf das Wesentliche zu besinnen: Miteinander, Wärme und Zusammenhalt. In dieser besonderen Zeit möchten wir als Elternbeirat einen gemeinsamen Appell an unsere Elternschaft richten:
 Lasst uns gemeinsam Verantwortung übernehmen – für unsere Kinder und für ein sicheres, wertschätzendes Miteinander rund um unseren Schulalltag.
@@ -51,7 +133,7 @@ Zusammenhalt auch bei Konflikten
 Wo viele Kinder miteinander lernen, spielen und wachsen, entstehen hin und wieder Konflikte – das ist ganz normal. Wichtig ist:
 Unsere Kinder sind in der Schule gut begleitet, und gemeinsam können wir ihnen helfen, Konflikte sicher und kindgerecht zu lösen.
 
-Dafür stehen mehrere Anlaufstellen offen: die Klassenlehrkraft, die Klassenkonferenz, unsere Schulsozialarbeiter*innen, die SIS („Senioren in der Schule“, den Kindern bekannt als die „Zitronen“).
+Dafür stehen mehrere Anlaufstellen offen: die Klassenlehrkraft, die Klassenkonferenz, unsere Schulsozialarbeiter*innen, die SIS („Senioren in der Schule", den Kindern bekannt als die „Zitronen").
 
 Ermutigen wir unsere Kinder, diese Angebote zu nutzen und Vertrauen zu fassen.
 Und lassen wir Konflikte bewusst in der Schule lösen. Für uns Eltern heißt das: Wir sprechen bei Bedarf natürlich mit unserem Kind. Sollte es nötig sein, auch mit den betroffenen Eltern – jedoch
@@ -74,17 +156,130 @@ Wir danken Ihnen von Herzen für Ihre Mithilfe, Ihr Vertrauen und Ihr Mitwirken 
 
 Herzliche Grüße
 Ihr Elternbeirat</textarea>
+    </div>
 
-<br><br>
-
-<button onclick="copyAndTranslate()">Translate Text with DeepL</button>
+    <div class="text-section">
+        <h2>English Translation</h2>
+        <textarea id="translation" placeholder="Click 'Translate' button to see the translation here..." readonly></textarea>
+    </div>
+</div>
 
 <script>
-function copyAndTranslate() {
+async function translateHere() {
     const text = document.getElementById('text').value;
-    const encodedText = encodeURIComponent(text);
-    window.location.href = `https://www.deepl.com/translator#de/en/${encodedText}`;
+    const translationBox = document.getElementById('translation');
+    const status = document.getElementById('status');
+    const germanSection = document.getElementById('german-section');
+    
+    if (!text.trim()) {
+        status.textContent = '⚠️ Please enter text to translate';
+        status.style.color = 'orange';
+        return;
+    }
+    
+    status.textContent = '⏳ Translating...';
+    status.style.color = '#667eea';
+    translationBox.value = 'Translating...';
+    
+    try {
+        // Split text into chunks (MyMemory API limit is 500 chars per request)
+        const chunks = splitIntoChunks(text, 500);
+        let fullTranslation = '';
+        
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            status.textContent = `⏳ Translating... (${i + 1}/${chunks.length})`;
+            
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=de|en`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.responseStatus !== 200) {
+                throw new Error(data.responseDetails || 'Translation API error');
+            }
+            
+            fullTranslation += data.responseData.translatedText + '\n\n';
+            
+            // Small delay to avoid rate limiting
+            if (i < chunks.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+        }
+        
+        translationBox.value = fullTranslation.trim();
+        status.textContent = '✓ Translation complete!';
+        status.style.color = 'green';
+        
+        // Hide the German text section with smooth animation
+        germanSection.style.transition = 'opacity 0.5s, max-height 0.5s';
+        germanSection.style.opacity = '0';
+        germanSection.style.maxHeight = '0';
+        germanSection.style.overflow = 'hidden';
+        germanSection.style.marginBottom = '0';
+        
+        // Show "New Translation" button and hide "Translate" button
+        setTimeout(() => {
+            document.getElementById('translate-btn').style.display = 'none';
+            document.getElementById('new-translation-btn').style.display = 'inline-block';
+        }, 500);
+        
+    } catch (error) {
+        translationBox.value = '';
+        status.textContent = '✗ Translation failed: ' + error.message;
+        status.style.color = 'red';
+    }
 }
+
+function resetPage() {
+    const germanSection = document.getElementById('german-section');
+    const translationBox = document.getElementById('translation');
+    const status = document.getElementById('status');
+    
+    // Show German section again
+    germanSection.style.transition = 'opacity 0.5s, max-height 0.5s';
+    germanSection.style.opacity = '1';
+    germanSection.style.maxHeight = '1000px';
+    germanSection.style.marginBottom = '30px';
+    
+    // Clear translation
+    translationBox.value = '';
+    status.textContent = '';
+    
+    // Show "Translate" button and hide "New Translation" button
+    document.getElementById('translate-btn').style.display = 'inline-block';
+    document.getElementById('new-translation-btn').style.display = 'none';
+}
+
+function splitIntoChunks(text, maxLength) {
+    if (text.length <= maxLength) return [text];
+    
+    const chunks = [];
+    const sentences = text.split(/([.!?]\s+)/);
+    let currentChunk = '';
+    
+    for (let i = 0; i < sentences.length; i++) {
+        const sentence = sentences[i];
+        
+        if ((currentChunk + sentence).length > maxLength && currentChunk) {
+            chunks.push(currentChunk.trim());
+            currentChunk = sentence;
+        } else {
+            currentChunk += sentence;
+        }
+    }
+    
+    if (currentChunk.trim()) {
+        chunks.push(currentChunk.trim());
+    }
+    
+    return chunks;
+}
+
 </script>
 
 </body>
