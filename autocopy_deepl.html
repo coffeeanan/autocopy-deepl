@@ -82,11 +82,8 @@ Ihr Elternbeirat</textarea>
 <script>
 function copyAndTranslate() {
     const text = document.getElementById('text').value;
-    navigator.clipboard.writeText(text).then(() => {
-        window.location.href = "https://www.deepl.com/translator#de/en";
-    }).catch(err => {
-        alert("Copy failed: " + err);
-    });
+    const encodedText = encodeURIComponent(text);
+    window.location.href = `https://www.deepl.com/translator#de/en/${encodedText}`;
 }
 </script>
 
