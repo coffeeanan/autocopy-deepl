@@ -77,10 +77,10 @@ Ihr Elternbeirat</textarea>
 
 <br><br>
 
-<button onclick="translate()">Copy & Open DeepL</button>
+<button onclick="copyAndTranslate()">Copy & Open DeepL</button>
 
 <script>
-function translate() {
+function copyAndTranslate() {
     const text = document.getElementById('text').value;
     navigator.clipboard.writeText(text).then(() => {
         window.location.href = "https://www.deepl.com/translator#de/en";
