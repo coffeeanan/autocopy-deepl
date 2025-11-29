@@ -29,7 +29,7 @@ textarea {
     flex: 1;
     min-height: 400px;
     padding: 20px; 
-    font-size: 26px; 
+    font-size: 30px; 
     line-height: 1.8;
     box-sizing: border-box;
     border: 2px solid #e0e0e0;
@@ -55,6 +55,13 @@ h2 {
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+}
+#translation-section {
+    flex: 1;
+}
+#translation-section textarea {
+    height: 100%;
 }
 @media (max-width: 768px) {
     body {
@@ -66,7 +73,7 @@ h2 {
         border-radius: 15px;
     }
     textarea {
-        font-size: 26px;
+        font-size: 30px;
         line-height: 1.8;
         padding: 20px;
     }
@@ -253,7 +260,8 @@ async function translateHere() {
         status.style.color = 'green';
         
         // Show the translation section
-        document.getElementById('translation-section').style.display = 'block';
+        const translationSection = document.getElementById('translation-section');
+        translationSection.style.display = 'flex';
         
         // Hide the German text section with smooth animation
         germanSection.style.transition = 'opacity 0.5s, max-height 0.5s';
