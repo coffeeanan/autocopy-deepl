@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>German → DeepL Translator</title>
+<title>German Translator</title>
 <style>
 body { 
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
@@ -85,6 +85,10 @@ h2 {
         font-size: 20px;
         margin: 5px 0;
     }
+    select {
+        font-size: 32px;
+        padding: 30px 60px;
+    }
     button {
         font-size: 28px;
         padding: 25px 60px;
@@ -93,6 +97,26 @@ h2 {
 textarea:focus {
     outline: none;
     border-color: #667eea;
+}
+select {
+    padding: 30px 60px;
+    font-size: 32px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    text-align-last: center;
+}
+select option {
+    background: white;
+    color: #333;
+    padding: 10px;
 }
 button {
     padding: 25px 60px;
@@ -128,23 +152,32 @@ button:disabled {
     font-weight: 600;
     min-height: 20px;
 }
-#new-translation-btn {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-}
-#new-translation-btn:hover {
-    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
-}
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>German → English Translator</h1>
+    <h1>German Translator</h1>
 
     <div class="section">
-        <button id="translate-btn" onclick="translateHere()">Translate</button>
-        <button id="new-translation-btn" onclick="resetPage()" style="display: none;">New Translation</button>
+        <div id="translate-controls">
+            <select id="language-select" onchange="translateHere()">
+                <option value="">Select Language to Translate</option>
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="it">Italian</option>
+                <option value="pt">Portuguese</option>
+                <option value="ru">Russian</option>
+                <option value="ar">Arabic</option>
+                <option value="he">Hebrew</option>
+                <option value="nl">Dutch</option>
+                <option value="pl">Polish</option>
+                <option value="tr">Turkish</option>
+                <option value="ja">Japanese</option>
+                <option value="zh">Chinese</option>
+            </select>
+        </div>
         <p id="status"></p>
     </div>
 
@@ -203,17 +236,39 @@ Ihr Elternbeirat</textarea>
     </div>
 
     <div class="text-section" id="translation-section" style="display: none;">
-        <h2>English Translation</h2>
-        <textarea id="translation" placeholder="Click 'Translate' button to see the translation here..." readonly></textarea>
+        <h2>Translation</h2>
+        <textarea id="translation" placeholder="Select a language to see the translation here..." readonly></textarea>
     </div>
 </div>
 
 <script>
+const languageNames = {
+    'en': 'English',
+    'es': 'Spanish',
+    'fr': 'French',
+    'it': 'Italian',
+    'pt': 'Portuguese',
+    'ru': 'Russian',
+    'ar': 'Arabic',
+    'he': 'Hebrew',
+    'nl': 'Dutch',
+    'pl': 'Polish',
+    'tr': 'Turkish',
+    'ja': 'Japanese',
+    'zh': 'Chinese'
+};
+
 async function translateHere() {
     const text = document.getElementById('text').value;
     const translationBox = document.getElementById('translation');
     const status = document.getElementById('status');
     const germanSection = document.getElementById('german-section');
+    const targetLang = document.getElementById('language-select').value;
+    
+    if (!targetLang) {
+        status.textContent = '';
+        return;
+    }
     
     if (!text.trim()) {
         status.textContent = '⚠️ Please enter text to translate';
@@ -234,7 +289,7 @@ async function translateHere() {
             const chunk = chunks[i];
             status.textContent = `⏳ Translating... (${i + 1}/${chunks.length})`;
             
-            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=de|en`;
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=de|${targetLang}`;
             const response = await fetch(url);
             
             if (!response.ok) {
@@ -259,8 +314,12 @@ async function translateHere() {
         status.textContent = '✓ Translation complete!';
         status.style.color = 'green';
         
-        // Show the translation section
+        // Update the translation section heading
         const translationSection = document.getElementById('translation-section');
+        const translationHeading = translationSection.querySelector('h2');
+        translationHeading.textContent = `${languageNames[targetLang]} Translation`;
+        
+        // Show the translation section
         translationSection.style.display = 'flex';
         
         // Hide the German text section with smooth animation
@@ -270,10 +329,9 @@ async function translateHere() {
         germanSection.style.overflow = 'hidden';
         germanSection.style.marginBottom = '0';
         
-        // Show "New Translation" button and hide "Translate" button
+        // Hide language select after translation
         setTimeout(() => {
-            document.getElementById('translate-btn').style.display = 'none';
-            document.getElementById('new-translation-btn').style.display = 'inline-block';
+            document.getElementById('translate-controls').style.display = 'none';
         }, 500);
         
     } catch (error) {
@@ -283,28 +341,6 @@ async function translateHere() {
     }
 }
 
-function resetPage() {
-    const germanSection = document.getElementById('german-section');
-    const translationBox = document.getElementById('translation');
-    const status = document.getElementById('status');
-    
-    // Show German section again
-    germanSection.style.transition = 'opacity 0.5s, max-height 0.5s';
-    germanSection.style.opacity = '1';
-    germanSection.style.maxHeight = '1000px';
-    germanSection.style.marginBottom = '30px';
-    
-    // Hide translation section
-    document.getElementById('translation-section').style.display = 'none';
-    
-    // Clear translation
-    translationBox.value = '';
-    status.textContent = '';
-    
-    // Show "Translate" button and hide "New Translation" button
-    document.getElementById('translate-btn').style.display = 'inline-block';
-    document.getElementById('new-translation-btn').style.display = 'none';
-}
 
 function splitIntoChunks(text, maxLength) {
     if (text.length <= maxLength) return [text];
