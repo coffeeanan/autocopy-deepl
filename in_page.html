@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>German → DeepL Translator</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+.container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+textarea { width: 100%; height: 400px; padding: 10px; font-size: 16px; box-sizing: border-box; }
+button {
+    padding: 15px 25px;
+    font-size: 18px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+button:hover { background-color: #005fcc; }
+button:disabled { background-color: #ccc; cursor: not-allowed; }
+.section { margin-bottom: 20px; }
+@media (max-width: 768px) {
+    .container { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<h1>German → English Translator</h1>
+
+<div class="section">
+    <button onclick="translateHere()">Translate Here (Free API)</button>
+    <button onclick="openDeepL()">Open in DeepL (Better Quality)</button>
+    <p id="status" style="color: #007aff; font-weight: bold; margin-top: 10px;"></p>
+</div>
+
+<div class="container">
+    <div>
+        <h2>German Text</h2>
+        <textarea id="text">Liebe Eltern, liebe Erziehungsberechtigte,
+
+die Adventszeit lädt uns jedes Jahr dazu ein, innezuhalten und uns auf das Wesentliche zu besinnen: Miteinander, Wärme und Zusammenhalt. In dieser besonderen Zeit möchten wir als Elternbeirat einen gemeinsamen Appell an unsere Elternschaft richten:
+Lasst uns gemeinsam Verantwortung übernehmen – für unsere Kinder und für ein sicheres, wertschätzendes Miteinander rund um unseren Schulalltag.
+
+Gemeinsam für einen sicheren Schulweg
+Bitte helfen Sie mit, dass alle Kinder sicher, selbstständig und gut gelaunt ankommen:
+
+Zu Fuß zur Schule – gemeinsam stark!
+Der Fußweg tut gut, macht wach und gibt den Kindern ein Stück Selbstständigkeit.
+Mit geeigneter wetterfester Kleidung ist jedes Wetter gut zu meistern!
+
+Sichtbar unterwegs
+In der dunkleren Jahreszeit helfen gut sichtbare Kleidung und Reflektoren enorm, damit unsere Kinder sicher ankommen. Ein kleiner Aufwand – mit großer Wirkung.
+
+Rücksicht aufeinander
+Egal ob wir selbst mit dem Auto, Fahrrad oder zu Fuß unterwegs sind: Wenn wir aufeinander achten, tragen wir alle dazu bei, dass jeder sicher ankommt.
+Wenn das Autofahren zur Schule unvermeidbar ist – achten wir darauf, nicht den Verkehr vor der Schule zu blockieren und zusätzliche Gefährdungen zu vermeiden.
+
+Begleitung mit Augenmaß
+Bei Bedarf führen wir unsere Kinder bis zum Schultor – und wir unterstützen die Selbstständigkeit aller Kinder, indem wir das Schulhaus nur bei triftigem Anlass betreten (z. B. vereinbarter Gesprächstermin).
+So entlasten wir den Schulalltag und ermöglichen einen ruhigen und strukturierten Schulalltag.
+
+Zusammenhalt auch bei Konflikten
+Wo viele Kinder miteinander lernen, spielen und wachsen, entstehen hin und wieder Konflikte – das ist ganz normal. Wichtig ist:
+Unsere Kinder sind in der Schule gut begleitet, und gemeinsam können wir ihnen helfen, Konflikte sicher und kindgerecht zu lösen.
+
+Dafür stehen mehrere Anlaufstellen offen: die Klassenlehrkraft, die Klassenkonferenz, unsere Schulsozialarbeiter*innen, die SIS („Senioren in der Schule", den Kindern bekannt als die „Zitronen").
+
+Ermutigen wir unsere Kinder, diese Angebote zu nutzen und Vertrauen zu fassen.
+Und lassen wir Konflikte bewusst in der Schule lösen. Für uns Eltern heißt das: Wir sprechen bei Bedarf natürlich mit unserem Kind. Sollte es nötig sein, auch mit den betroffenen Eltern – jedoch
+sprechen wir niemals eigenständig das oder die anderen betroffenen Kind/er an!
+Wir mischen uns nicht direkt in Konflikte zwischen Kindern ein, denn das ist Aufgabe der pädagogischen Fachkräfte.
+
+Gemeinsam schenken wir den Kindern Sicherheit, Orientierung und die Erfahrung: Wir schaffen das zusammen.
+
+Hinsehen und aktiv werden – füreinander da sein
+Hinschauen kann ein wichtiger Baustein für ein warmherziges und sicheres Miteinander sein. Wenn wir erleben, dass ein Kind – von wem auch immer – unangemessen behandelt oder angesprochen wird, dann hilft schon ein achtsames Hinsehen. Gemeinsam sorgen wir dafür, dass jedes Kind sich geschützt und sicher fühlt.
+
+Bitte teilen Sie der Schulleitung alle Vorfälle und Unfälle mit.
+Scheuen Sie nicht, auch vermeintlich bedeutungslose Vorfälle oder Beinahe-Unfälle zu melden.
+Jede Information hilft, Situationen besser einzuschätzen und Verbesserungen auf den Weg zu bringen. Nur wenn wir informiert sind, können wir unsere Schule noch sicherer machen.
+
+Gemeinsam für unsere Kinder
+Die Adventszeit zeigt uns, wie wertvoll Gemeinschaft ist. Wir alle tragen ein Stück dazu bei, dass unsere Kinder jeden Tag sicher und glücklich zur Schule gelangen – und wieder nach Hause zurückkehren.
+
+Wir danken Ihnen von Herzen für Ihre Mithilfe, Ihr Vertrauen und Ihr Mitwirken und wünschen Ihnen und Ihren Familien eine friedliche Adventszeit.
+
+Herzliche Grüße
+Ihr Elternbeirat</textarea>
+    </div>
+    <div>
+        <h2>English Translation</h2>
+        <textarea id="translation" placeholder="Translation will appear here..." readonly></textarea>
+    </div>
+</div>
+
+<script>
+async function translateHere() {
+    const text = document.getElementById('text').value;
+    const translationBox = document.getElementById('translation');
+    const status = document.getElementById('status');
+    
+    if (!text.trim()) {
+        status.textContent = '⚠️ Please enter text to translate';
+        status.style.color = 'orange';
+        return;
+    }
+    
+    status.textContent = '⏳ Translating...';
+    status.style.color = '#007aff';
+    translationBox.value = 'Translating...';
+    
+    try {
+        // Split text into chunks (LibreTranslate API has limits)
+        const chunks = splitIntoChunks(text, 5000);
+        let fullTranslation = '';
+        
+        for (let chunk of chunks) {
+            const response = await fetch('https://libretranslate.com/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    q: chunk,
+                    source: 'de',
+                    target: 'en',
+                    format: 'text'
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            fullTranslation += data.translatedText + '\n';
+        }
+        
+        translationBox.value = fullTranslation.trim();
+        status.textContent = '✓ Translation complete!';
+        status.style.color = 'green';
+    } catch (error) {
+        translationBox.value = '';
+        status.textContent = '✗ Translation failed: ' + error.message;
+        status.style.color = 'red';
+    }
+}
+
+function splitIntoChunks(text, maxLength) {
+    if (text.length <= maxLength) return [text];
+    
+    const chunks = [];
+    const paragraphs = text.split('\n\n');
+    let currentChunk = '';
+    
+    for (let para of paragraphs) {
+        if ((currentChunk + para).length > maxLength && currentChunk) {
+            chunks.push(currentChunk.trim());
+            currentChunk = para + '\n\n';
+        } else {
+            currentChunk += para + '\n\n';
+        }
+    }
+    
+    if (currentChunk) {
+        chunks.push(currentChunk.trim());
+    }
+    
+    return chunks;
+}
+
+function openDeepL() {
+    const text = document.getElementById('text').value;
+    const status = document.getElementById('status');
+    
+    navigator.clipboard.writeText(text).then(() => {
+        status.textContent = '✓ Text copied! Opening DeepL... (Paste with Cmd+V)';
+        status.style.color = '#007aff';
+        setTimeout(() => {
+            window.open("https://www.deepl.com/translator#de/en", '_blank');
+            status.textContent = '';
+        }, 1500);
+    }).catch(err => {
+        status.textContent = '✗ Copy failed: ' + err;
+        status.style.color = 'red';
+    });
+}
+</script>
+
+</body>
+</html>
