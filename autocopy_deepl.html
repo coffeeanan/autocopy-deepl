@@ -1,11 +1,30 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<title>Auto Copy → DeepL</title>
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-    const text = `Liebe Eltern, liebe Erziehungsberechtigte,
+<meta charset="UTF-8">
+<title>German → DeepL Translator</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+textarea { width: 100%; height: 400px; padding: 10px; font-size: 16px; }
+button {
+    padding: 15px 25px;
+    font-size: 18px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+button:hover { background-color: #005fcc; }
+</style>
+</head>
+<body>
+
+<h2>German Text</h2>
+<p>The text below can be translated using DeepL.</p>
+
+<textarea id="text">Liebe Eltern, liebe Erziehungsberechtigte,
 
 die Adventszeit lädt uns jedes Jahr dazu ein, innezuhalten und uns auf das Wesentliche zu besinnen: Miteinander, Wärme und Zusammenhalt. In dieser besonderen Zeit möchten wir als Elternbeirat einen gemeinsamen Appell an unsere Elternschaft richten:
 Lasst uns gemeinsam Verantwortung übernehmen – für unsere Kinder und für ein sicheres, wertschätzendes Miteinander rund um unseren Schulalltag.
@@ -54,17 +73,22 @@ Die Adventszeit zeigt uns, wie wertvoll Gemeinschaft ist. Wir alle tragen ein St
 Wir danken Ihnen von Herzen für Ihre Mithilfe, Ihr Vertrauen und Ihr Mitwirken und wünschen Ihnen und Ihren Familien eine friedliche Adventszeit.
 
 Herzliche Grüße
-Ihr Elternbeirat`;
-    try {
-        await navigator.clipboard.writeText(text);
-    } catch (err) {
-        console.log("Clipboard copy failed:", err);
-    }
-    window.location.href = "https://www.deepl.com/translator#de/en";
-});
+Ihr Elternbeirat</textarea>
+
+<br><br>
+
+<button onclick="translate()">Copy & Open DeepL</button>
+
+<script>
+function translate() {
+    const text = document.getElementById('text').value;
+    navigator.clipboard.writeText(text).then(() => {
+        window.location.href = "https://www.deepl.com/translator#de/en";
+    }).catch(err => {
+        alert("Copy failed: " + err);
+    });
+}
 </script>
-</head>
-<body>
-<p>Copying text… redirecting to DeepL…</p>
+
 </body>
 </html>
